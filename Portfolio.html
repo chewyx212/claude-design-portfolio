@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Chew Yuen Xuen — Portfolio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; }
+  * { box-sizing: border-box; }
+  ::selection { background: rgba(184,112,42,.25); }
+  a { color: inherit; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+
+// ─── Tweaks panel ────────────────────────────────────────────────────────────
+
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;overflow-x:hidden;min-height:0;
+    scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+  .twk-body::-webkit-scrollbar{width:8px}
+  .twk-body::-webkit-scrollbar-track{background:transparent;margin:2px}
+  .twk-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;
+    border:2px solid transparent;background-clip:content-box}
+  .twk-body::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25);
+    border:2px solid transparent;background-clip:content-box}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;
+    color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+
+  .twk-field{appearance:none;width:100%;height:26px;padding:0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+    background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+  .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+  select.twk-field{padding-right:22px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center}
+
+  .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+    border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+  .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;background:#fff;
+    border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+    background:#fff;border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
+    background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+    background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+    transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+  .twk-seg.dragging .twk-seg-thumb{transition:none}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+    background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;
+    overflow-wrap:anywhere}
+
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+
+  .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
+    background:transparent;flex-shrink:0}
+  .twk-swatch::-webkit-color-swatch-wrapper{padding:0}
+  .twk-swatch::-webkit-color-swatch{border:0;border-radius:5.5px}
+  .twk-swatch::-moz-color-swatch{border:0;border-radius:5.5px}
+
+  .twk-fab{position:fixed;right:16px;bottom:16px;z-index:2147483645;
+    appearance:none;border:0;border-radius:10px;
+    background:rgba(250,249,247,.9);color:#29261b;
+    -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+    box-shadow:0 2px 12px rgba(0,0,0,.18);
+    font:500 11px/1 ui-sans-serif,system-ui,sans-serif;
+    letter-spacing:.03em;padding:10px 14px;cursor:default}
+  .twk-fab:hover{background:rgba(250,249,247,1)}
+`;
+
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  const setTweak = React.useCallback((keyOrEdits, val) => {
+    const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null
+      ? keyOrEdits : { [keyOrEdits]: val };
+    setValues((prev) => ({ ...prev, ...edits }));
+  }, []);
+  return [values, setTweak];
+}
+
+function TweaksPanel({ title = 'Tweaks', children, open, onClose }) {
+  const dragRef = React.useRef(null);
+  const offsetRef = React.useRef({ x: 16, y: 16 });
+  const PAD = 16;
+
+  const clampToViewport = React.useCallback(() => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+    offsetRef.current = {
+      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
+    };
+    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.bottom = offsetRef.current.y + 'px';
+  }, []);
+
+  React.useEffect(() => {
+    if (!open) return;
+    clampToViewport();
+    const ro = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(clampToViewport)
+      : null;
+    if (ro) { ro.observe(document.documentElement); return () => ro.disconnect(); }
+    window.addEventListener('resize', clampToViewport);
+    return () => window.removeEventListener('resize', clampToViewport);
+  }, [open, clampToViewport]);
+
+  const onDragStart = (e) => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY;
+    const startRight = window.innerWidth - r.right;
+    const startBottom = window.innerHeight - r.bottom;
+    const move = (ev) => {
+      offsetRef.current = {
+        x: startRight - (ev.clientX - sx),
+        y: startBottom - (ev.clientY - sy),
+      };
+      clampToViewport();
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+
+  return (
+    <>
+      <style>{__TWEAKS_STYLE}</style>
+      {!open && (
+        <button className="twk-fab" onClick={onClose}>⚙ Tweaks</button>
+      )}
+      {open && (
+        <div ref={dragRef} className="twk-panel"
+             style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+          <div className="twk-hd" onMouseDown={onDragStart}>
+            <b>{title}</b>
+            <button className="twk-x" aria-label="Close tweaks"
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={onClose}>✕</button>
+          </div>
+          <div className="twk-body">{children}</div>
+        </div>
+      )}
+    </>
+  );
+}
+
+function TweakSection({ label }) {
+  return <div className="twk-sect">{label}</div>;
+}
+
+function TweakRow({ label, value, children, inline = false }) {
+  return (
+    <div className={inline ? 'twk-row twk-row-h' : 'twk-row'}>
+      <div className="twk-lbl">
+        <span>{label}</span>
+        {value != null && <span className="twk-val">{value}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function TweakSlider({ label, value, min = 0, max = 100, step = 1, unit = '', onChange }) {
+  return (
+    <TweakRow label={label} value={`${value}${unit}`}>
+      <input type="range" className="twk-slider" min={min} max={max} step={step}
+             value={value} onChange={(e) => onChange(Number(e.target.value))} />
+    </TweakRow>
+  );
+}
+
+function TweakToggle({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <button type="button" className="twk-toggle" data-on={value ? '1' : '0'}
+              role="switch" aria-checked={!!value}
+              onClick={() => onChange(!value)}><i /></button>
+    </div>
+  );
+}
+
+function TweakRadio({ label, value, options, onChange }) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+  const opts = options.map((o) => (typeof o === 'object' ? o : { value: o, label: o }));
+  const idx = Math.max(0, opts.findIndex((o) => o.value === value));
+  const n = opts.length;
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+
+  const segAt = (clientX) => {
+    const r = trackRef.current.getBoundingClientRect();
+    const inner = r.width - 4;
+    const i = Math.floor(((clientX - r.left - 2) / inner) * n);
+    return opts[Math.max(0, Math.min(n - 1, i))].value;
+  };
+
+  const onPointerDown = (e) => {
+    setDragging(true);
+    const v0 = segAt(e.clientX);
+    if (v0 !== valueRef.current) onChange(v0);
+    const move = (ev) => {
+      if (!trackRef.current) return;
+      const v = segAt(ev.clientX);
+      if (v !== valueRef.current) onChange(v);
+    };
+    const up = () => {
+      setDragging(false);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+
+  return (
+    <TweakRow label={label}>
+      <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown}
+           className={dragging ? 'twk-seg dragging' : 'twk-seg'}>
+        <div className="twk-seg-thumb"
+             style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`,
+                      width: `calc((100% - 4px) / ${n})` }} />
+        {opts.map((o) => (
+          <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </TweakRow>
+  );
+}
+
+function TweakSelect({ label, value, options, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <select className="twk-field" value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((o) => {
+          const v = typeof o === 'object' ? o.value : o;
+          const l = typeof o === 'object' ? o.label : o;
+          return <option key={v} value={v}>{l}</option>;
+        })}
+      </select>
+    </TweakRow>
+  );
+}
+
+function TweakColor({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <input type="color" className="twk-swatch" value={value}
+             onChange={(e) => onChange(e.target.value)} />
+    </div>
+  );
+}
+
+// ─── Portfolio App ────────────────────────────────────────────────────────────
+
+const THEMES = {
+  paper: { bg: '#F7F5F0', fg: '#1A1A17', muted: '#79766E', soft: '#D9D5C8', invBg: '#1A1A17', invFg: '#F7F5F0' },
+  ivory: { bg: '#FBFAF5', fg: '#222018', muted: '#86837A', soft: '#E5E1D4', invBg: '#222018', invFg: '#FBFAF5' },
+  ink:   { bg: '#0E0E0C', fg: '#EDEAE0', muted: '#8A8880', soft: '#2A2A26', invBg: '#EDEAE0', invFg: '#0E0E0C' },
+  cool:  { bg: '#F4F5F7', fg: '#15171B', muted: '#71757D', soft: '#DCDEE3', invBg: '#15171B', invFg: '#F4F5F7' },
+};
+
+const FONT_PAIRS = {
+  jetbrains: { mono: '"JetBrains Mono", ui-monospace, monospace', sans: '"JetBrains Mono", ui-monospace, monospace', name: 'JetBrains Mono' },
+  geist:     { mono: '"Geist Mono", ui-monospace, monospace', sans: '"Geist", system-ui, sans-serif', name: 'Geist Mono + Geist' },
+  ibm:       { mono: '"IBM Plex Mono", ui-monospace, monospace', sans: '"IBM Plex Sans", system-ui, sans-serif', name: 'IBM Plex Mono + Sans' },
+  fira:      { mono: '"Fira Code", ui-monospace, monospace', sans: '"Fira Code", ui-monospace, monospace', name: 'Fira Code' },
+};
+
+const ACCENTS = {
+  amber: '#B8702A',
+  sage:  '#5C7A5A',
+  ink:   '#3D5A80',
+  rust:  '#A04A2C',
+  plum:  '#6B4978',
+};
+
+const DENSITIES = {
+  compact: { pad: 36, gap: 18, hPad: 56, vGap: 64 },
+  regular: { pad: 48, gap: 24, hPad: 72, vGap: 88 },
+  airy:    { pad: 60, gap: 30, hPad: 96, vGap: 112 },
+};
+
+const HeroAscii = ({ t, c }) => (
+  <div>
+    <pre style={{ margin: 0, fontSize: 13, color: t.muted, lineHeight: 1.5, marginBottom: 32, overflowX: 'auto' }}>
+{`┌──────────────────────────────────────────────────────────────────┐
+│ NAME    chew yuen xuen                                           │
+│ ROLE    frontend developer · full stack capable                  │
+│ BASED   singapore / malaysia                                     │
+│ EMAIL   paulyx212@gmail.com                                      │
+│ AVAIL   immediately                                              │
+└──────────────────────────────────────────────────────────────────┘`}
+    </pre>
+    <h1 style={{ fontWeight: 400, fontSize: 'clamp(36px, 5vw, 60px)', lineHeight: 1.05, letterSpacing: '-0.02em', margin: 0, marginBottom: 36 }}>
+      I build clean,<br/>
+      maintainable,<br/>
+      well-tested<br/>
+      <span style={{ color: c }}>web applications.</span>
+    </h1>
+  </div>
+);
+
+const HeroMinimal = ({ t, c }) => (
+  <div>
+    <div style={{ fontSize: 11, color: t.muted, letterSpacing: '0.06em', marginBottom: 40 }}>
+      <span style={{ color: c }}>$</span> whoami
+    </div>
+    <h1 style={{ fontWeight: 400, fontSize: 'clamp(48px, 8vw, 96px)', lineHeight: 0.95, letterSpacing: '-0.04em', margin: 0, marginBottom: 24 }}>
+      chew<br/>yuen xuen<span style={{ color: c }}>_</span>
+    </h1>
+    <div style={{ fontSize: 14, color: t.muted, marginTop: 28, maxWidth: 560 }}>
+      // frontend developer · full stack capable · 5 years · singapore / malaysia
+    </div>
+  </div>
+);
+
+const HeroBlock = ({ t, c }) => (
+  <div style={{ background: t.fg, color: t.bg, padding: 'clamp(24px, 4vw, 48px)', marginBottom: 36 }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.soft, marginBottom: 36, letterSpacing: '0.04em', flexWrap: 'wrap', gap: 8 }}>
+      <span>// portfolio.v2026.04</span>
+      <span style={{ color: c }}>● open to work</span>
+    </div>
+    <h1 style={{ fontWeight: 400, fontSize: 'clamp(28px, 4vw, 56px)', lineHeight: 1.05, letterSpacing: '-0.02em', margin: 0, marginBottom: 24 }}>
+      chew yuen xuen — <span style={{ color: c }}>frontend</span> developer building clean, maintainable, well-tested web applications.
+    </h1>
+    <div style={{ display: 'flex', gap: 32, fontSize: 11, color: t.soft, paddingTop: 28, borderTop: `1px solid ${t.muted}`, flexWrap: 'wrap' }}>
+      <span>5 years · react / next.js / typescript</span>
+      <span>singapore / malaysia · gmt+8</span>
+      <span>paulyx212@gmail.com</span>
+    </div>
+  </div>
+);
+
+const Section = ({ tag, title, children, t, c }) => (
+  <section style={{ marginBottom: 88 }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: `1.5px solid ${t.fg}`, paddingBottom: 8, marginBottom: 28, flexWrap: 'wrap', gap: 8 }}>
+      <div style={{ fontSize: 12, letterSpacing: '0.04em' }}>
+        <span style={{ color: c }}>$</span> {tag}
+      </div>
+      <div style={{ fontSize: 11, color: t.muted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{title}</div>
+    </div>
+    {children}
+  </section>
+);
+
+const TWEAK_DEFAULTS = {
+  theme: 'paper',
+  fontPair: 'jetbrains',
+  accent: 'amber',
+  customAccent: '#B8702A',
+  density: 'regular',
+  hero: 'ascii',
+  uppercase: false,
+};
+
+function App() {
+  const [tw, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [panelOpen, setPanelOpen] = React.useState(false);
+
+  const t = THEMES[tw.theme] || THEMES.paper;
+  const fp = FONT_PAIRS[tw.fontPair] || FONT_PAIRS.jetbrains;
+  const c = tw.accent === 'custom' ? tw.customAccent : (ACCENTS[tw.accent] || ACCENTS.amber);
+  const d = DENSITIES[tw.density] || DENSITIES.regular;
+
+  const Hero = tw.hero === 'minimal' ? HeroMinimal : tw.hero === 'block' ? HeroBlock : HeroAscii;
+  const tt = (s) => tw.uppercase ? String(s).toUpperCase() : s;
+
+  return (
+    <div style={{
+      minHeight: '100vh', background: t.bg, color: t.fg,
+      fontFamily: fp.mono, fontSize: 13, lineHeight: 1.6,
+      padding: `${d.pad}px clamp(20px, ${d.hPad}px, ${d.hPad}px) ${d.pad + 24}px`,
+      boxSizing: 'border-box',
+    }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+
+        {/* top bar */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: d.vGap - 24, flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <div style={{ fontSize: 11, color: t.muted, marginBottom: 6, letterSpacing: '0.04em' }}>
+              // ~/portfolio/chew-yuen-xuen.md
+            </div>
+            <div style={{ fontSize: 11, letterSpacing: '0.04em' }}>v.2026.04 · 5 years experience · singapore</div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 11, letterSpacing: '0.04em', border: `1px solid ${t.fg}`, padding: '8px 14px' }}>
+            <span style={{ width: 6, height: 6, background: c, display: 'inline-block', borderRadius: '50%' }} />
+            status: available_for_work
+          </div>
+        </div>
+
+        {/* hero */}
+        <div style={{ marginBottom: d.vGap + 8 }}>
+          <Hero t={t} c={c} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'max-content 1fr', gap: 0, maxWidth: 880 }}>
+            <div style={{ borderLeft: `2px solid ${c}`, paddingLeft: 16, fontSize: 11, color: t.muted, letterSpacing: '0.04em' }}>
+              ABSTRACT
+            </div>
+            <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7 }}>
+              Frontend engineer with 5 years across enterprise and product environments. React, Next.js, TypeScript, Tailwind. Contributed to Singlife's shared internal React component library and was a key contributor to <span style={{ background: t.soft, padding: '0 4px' }}>EzSub</span> — recipient of the Singapore User Experience of the Year (Financial Services) at the Asian Business Review Awards 2025.
+            </p>
+          </div>
+        </div>
+
+        {/* EXPERIENCE */}
+        <Section tag="cat experience.log" title={tt("Section · 01")} t={t} c={c}>
+          {[
+            {
+              range: '2025.08 → present', co: 'Freelance Software Engineer', role: 'independent contractor', loc: 'remote',
+              bullets: [
+                ['Fleevigo OMS', 'Designed, built, and deployed a full-stack multi-stakeholder Order Management System for a European chauffeur service, now live in production. The system consolidates data from multiple booking platforms into a unified operator, driver, and supplier-facing interface. Took full ownership of frontend, backend, database, CI/CD, and deployment.'],
+                ['Shopify storefronts', 'Delivered storefronts and sales-funnel systems for clients across multiple markets using custom Liquid templates, Tailwind CSS, and CRM integrations — optimising for page load and usability.'],
+              ],
+              stack: 'next.js · nestjs · postgres · redis · liquid',
+            },
+            {
+              range: '2023.05 → 2025.08', co: 'Singlife Singapore', role: 'analyst, application development', loc: 'singapore', star: true,
+              bullets: [
+                ['EzSub', "Key contributor to a React + TypeScript adviser portal that received the Singapore UX of the Year — Financial Services award at the Asian Business Review Awards 2025 — a direct reflection of the UI and UX quality the team delivered."],
+                ['Component library', "Built and maintained reusable React components for EzSub's internal library, enforcing consistent design patterns and reducing frontend duplication across the product."],
+                ['Modernisation', 'Contributed to migrating EzSub from a legacy AngularJS codebase to React + TypeScript. Applied semantic HTML, responsive design, and cross-browser standards. Introduced structured PR review processes.'],
+                ['Mentorship', 'Supported offshore developers through code walkthroughs, PR reviews, and knowledge-sharing on React, TypeScript, and clean code practices.'],
+                ['Collaboration', 'Worked directly with team lead, PMs, and designers to translate product requirements into production-ready features on a fast-moving delivery schedule.'],
+              ],
+              stack: 'react · typescript · angularjs · design system',
+            },
+            {
+              range: '2022.09 → 2023.01', co: 'FeedMe', role: 'software engineer, full stack', loc: 'malaysia',
+              bullets: [
+                ['Payment integration', 'Integrated Razer Merchant Services (Fiuu) as a new payment partner, replacing the existing gateway end-to-end across web portal and backend APIs.'],
+                ['Payout accuracy', 'Maintained T+1 payout reconciliation; ensured daily transaction statements were accurate and merchant settlements processed correctly.'],
+                ['Full-stack maintenance', 'Maintained and extended the FeedMe web portal, backend APIs, and Flutter mobile app across payment-related features and bug fixes.'],
+              ],
+              stack: 'node · flutter · payments',
+            },
+            {
+              range: '2020 → 2023', co: 'Early career', role: 'frontend / mobile / full stack', loc: 'malaysia / singapore',
+              bullets: [
+                ['Deegix Pte Ltd', 'Full Stack Developer · Feb 2023 – Apr 2023, Singapore.'],
+                ['UC Technology', 'Mobile App Engineer (Internship) · Jun 2022 – Aug 2022.'],
+                ['Techworlds Innovation', 'Frontend Developer · Dec 2020 – Apr 2022. 18 months building foundations across HTML, CSS, JavaScript, and React.'],
+              ],
+              stack: 'frontend · mobile · foundations',
+            },
+          ].map((exp, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: 'clamp(120px, 180px, 180px) 1fr', gap: 24, paddingTop: 24, paddingBottom: 24, borderBottom: `1px dashed ${t.muted}` }}>
+              <div>
+                <div style={{ fontSize: 11, color: t.muted, marginBottom: 8 }}>{exp.range}</div>
+                <div style={{ fontSize: 11, color: t.muted }}>{exp.loc}</div>
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 18, letterSpacing: '-0.01em' }}>{exp.co}</span>
+                  {exp.star && <span style={{ fontSize: 10, color: c, letterSpacing: '0.08em', border: `1px solid ${c}`, padding: '1px 6px' }}>★ AWARD</span>}
+                </div>
+                <div style={{ fontSize: 11, color: t.muted, marginBottom: 16, letterSpacing: '0.04em' }}>{exp.role}</div>
+                <div>
+                  {exp.bullets.map(([title, body], j) => (
+                    <div key={j} style={{ display: 'grid', gridTemplateColumns: '20px minmax(100px, 150px) 1fr', gap: 12, fontSize: 13, lineHeight: 1.65, marginBottom: 10 }}>
+                      <span style={{ color: c }}>{'>'}</span>
+                      <span style={{ color: t.fg }}>{title.toLowerCase()}</span>
+                      <span style={{ color: t.muted }}>{body}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ fontSize: 11, color: t.muted, marginTop: 14, letterSpacing: '0.04em' }}>
+                  stack ╌╌ {exp.stack}
+                </div>
+              </div>
+            </div>
+          ))}
+        </Section>
+
+        {/* PROJECTS */}
+        <Section tag="ls ./personal-projects" title={tt("Section · 02")} t={t} c={c}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+            {[
+              {
+                status: 'live', name: 'worship-team-scheduler',
+                desc: 'Replaced a fully manual Discord-based scheduling process for a church worship team. A bot reads availability replies in-channel — keeping team behaviour unchanged — while admins manage rosters via a dedicated web interface that automatically respects block-out periods.',
+                stack: 'next.js / nestjs / postgres / discord.js',
+              },
+              {
+                status: 'in_testing', name: 'church-claims-management',
+                desc: 'Replaced a paper-based claims process with digital submission and a configurable, multi-level approval workflow. Members submit claims online; each is automatically routed to the appropriate leaders and admin roles.',
+                stack: 'next.js / nestjs / postgres',
+              },
+            ].map((p) => (
+              <div key={p.name} style={{ border: `1px solid ${t.fg}`, padding: 24 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14, fontSize: 11, color: t.muted, letterSpacing: '0.06em' }}>
+                  <span>./{p.name}</span>
+                  <span style={{ color: c }}>[{p.status}]</span>
+                </div>
+                <div style={{ fontSize: 18, marginBottom: 12 }}>{p.name.replace(/-/g, ' ')}</div>
+                <p style={{ fontSize: 13, color: t.muted, lineHeight: 1.65, margin: 0, marginBottom: 18 }}>{p.desc}</p>
+                <div style={{ fontSize: 11, color: t.fg, paddingTop: 12, borderTop: `1px dashed ${t.muted}` }}>{p.stack}</div>
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        {/* STACK */}
+        <Section tag="cat ~/.stack" title={tt("Section · 03")} t={t} c={c}>
+          <div>
+            {[
+              ['frontend', 'React, Next.js, React Native, AngularJS, TypeScript, JavaScript (ES6+), HTML5, CSS3, Tailwind CSS, Flutter'],
+              ['backend', 'Node.js, NestJS, Prisma, RESTful APIs, Microservices Architecture'],
+              ['database', 'PostgreSQL, MySQL, MongoDB, Redis'],
+              ['testing', 'Jest, Vitest, Playwright (E2E)'],
+              ['tooling', 'Docker, Webpack, Vite, Monorepo, Turborepo, CI/CD Pipelines, Git'],
+              ['ai', 'Claude Code, OpenAI Codex, Google Antigravity, AI Agents, OCR, Gemma 4'],
+              ['other', 'Shopify Liquid, CRM Integrations, Payment Gateway Integrations'],
+            ].map(([k, v]) => (
+              <div key={k} style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 24, padding: '12px 0', borderBottom: `1px dotted ${t.muted}` }}>
+                <div style={{ fontSize: 12, color: c }}>--{k}</div>
+                <div style={{ fontSize: 13 }}>{v}</div>
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        {/* AWARDS + EDUCATION */}
+        <Section tag="cat awards.md & cat education.md" title={tt("Section · 04")} t={t} c={c}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 32 }}>
+            <div style={{ background: t.invBg, color: t.invFg, padding: 28 }}>
+              <div style={{ fontSize: 11, letterSpacing: '0.08em', color: c, marginBottom: 18 }}>★ ASIAN BUSINESS REVIEW AWARDS · 2025</div>
+              <div style={{ fontSize: 24, lineHeight: 1.2, marginBottom: 16, letterSpacing: '-0.01em' }}>Singapore User Experience of the Year — Financial Services</div>
+              <p style={{ fontSize: 13, color: t.soft, margin: 0, lineHeight: 1.6 }}>Awarded to EzSub, Singlife's adviser portal. A direct reflection of the UI and UX quality the team delivered.</p>
+            </div>
+            <div style={{ paddingTop: 4 }}>
+              <div style={{ fontSize: 11, color: t.muted, marginBottom: 10 }}>2022 · graduated</div>
+              <div style={{ fontSize: 18, marginBottom: 6, letterSpacing: '-0.01em' }}>Bachelor of Software Engineering</div>
+              <div style={{ fontSize: 13, color: t.muted, marginBottom: 24 }}>Southern University College, Malaysia</div>
+              <div style={{ fontSize: 11, color: t.muted, marginBottom: 10 }}>spoken</div>
+              <div style={{ fontSize: 13, lineHeight: 1.7 }}>English · Mandarin · Malay</div>
+            </div>
+          </div>
+        </Section>
+
+        {/* CONTACT */}
+        <Section tag="contact --me" title={tt("Section · 05")} t={t} c={c}>
+          <h2 style={{ fontWeight: 400, fontSize: 'clamp(22px, 3vw, 36px)', lineHeight: 1.15, letterSpacing: '-0.02em', margin: 0, marginBottom: 32 }}>
+            Open to frontend and full-stack roles.<br/>
+            <span style={{ color: c }}>$ get_in_touch_</span>
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', columnGap: 40, rowGap: 0 }}>
+            {[
+              ['email', <a href="mailto:paulyx212@gmail.com" style={{ color: t.fg, textDecoration: 'none', borderBottom: `1px dashed ${t.muted}` }}>paulyx212@gmail.com</a>],
+              ['phone.sg', '+65 8043 2102'],
+              ['phone.my', '+60 19-790 2102'],
+              ['linkedin', <a href="https://linkedin.com/in/chew-yuen-xuen" style={{ color: t.fg, textDecoration: 'none', borderBottom: `1px dashed ${t.muted}` }}>/in/chew-yuen-xuen</a>],
+              ['github', <a href="https://github.com/paulyx212" style={{ color: t.fg, textDecoration: 'none', borderBottom: `1px dashed ${t.muted}` }}>/paulyx212</a>],
+              ['timezone', 'GMT+8 · Singapore'],
+            ].map(([k, v], i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', borderBottom: `1px solid ${t.muted}` }}>
+                <span style={{ color: t.muted }}>{k}</span>
+                <span>{v}</span>
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        {/* FOOTER */}
+        <div style={{ fontSize: 10, color: t.muted, paddingTop: 24, borderTop: `1px solid ${t.fg}`, display: 'flex', justifyContent: 'space-between', letterSpacing: '0.05em', flexWrap: 'wrap', gap: 8 }}>
+          <span>EOF · ./chew-yuen-xuen.md</span>
+          <span>set in {fp.name}</span>
+          <span>© 2026</span>
+        </div>
+
+      </div>
+
+      {/* Tweaks panel */}
+      <TweaksPanel title="Tweaks" open={panelOpen} onClose={() => setPanelOpen(!panelOpen)}>
+        <TweakSection label="Theme" />
+        <TweakSelect
+          label="Color theme"
+          value={tw.theme}
+          options={[
+            { value: 'paper', label: 'Paper (warm)' },
+            { value: 'ivory', label: 'Ivory' },
+            { value: 'ink', label: 'Ink (dark)' },
+            { value: 'cool', label: 'Cool grey' },
+          ]}
+          onChange={(v) => setTweak('theme', v)}
+        />
+        <TweakSelect
+          label="Accent"
+          value={tw.accent}
+          options={[
+            { value: 'amber', label: 'Amber' },
+            { value: 'sage', label: 'Sage' },
+            { value: 'ink', label: 'Ink blue' },
+            { value: 'rust', label: 'Rust' },
+            { value: 'plum', label: 'Plum' },
+            { value: 'custom', label: 'Custom…' },
+          ]}
+          onChange={(v) => setTweak('accent', v)}
+        />
+        {tw.accent === 'custom' && (
+          <TweakColor label="Custom accent" value={tw.customAccent} onChange={(v) => setTweak('customAccent', v)} />
+        )}
+
+        <TweakSection label="Type" />
+        <TweakSelect
+          label="Font pairing"
+          value={tw.fontPair}
+          options={[
+            { value: 'jetbrains', label: 'JetBrains Mono' },
+            { value: 'geist', label: 'Geist Mono + Geist' },
+            { value: 'ibm', label: 'IBM Plex Mono + Sans' },
+            { value: 'fira', label: 'Fira Code' },
+          ]}
+          onChange={(v) => setTweak('fontPair', v)}
+        />
+        <TweakToggle label="Uppercase labels" value={tw.uppercase} onChange={(v) => setTweak('uppercase', v)} />
+
+        <TweakSection label="Layout" />
+        <TweakRadio
+          label="Density"
+          value={tw.density}
+          options={['compact', 'regular', 'airy']}
+          onChange={(v) => setTweak('density', v)}
+        />
+
+        <TweakSection label="Hero" />
+        <TweakRadio
+          label="Variant"
+          value={tw.hero}
+          options={[
+            { value: 'ascii', label: 'ASCII' },
+            { value: 'minimal', label: 'Minimal' },
+            { value: 'block', label: 'Block' },
+          ]}
+          onChange={(v) => setTweak('hero', v)}
+        />
+      </TweaksPanel>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
